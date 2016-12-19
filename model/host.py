@@ -32,7 +32,7 @@ from wok.asynctask import AsyncTask
 from wok.basemodel import Singleton
 from wok.exception import InvalidOperation
 from wok.exception import OperationFailed
-from wok.utils import run_command, wok_log
+from wok.utils import run_command, wok_log, is_openrc
 from wok.model.tasks import TaskModel
 
 from wok.plugins.gingerbase.config import config
@@ -377,8 +377,10 @@ class HostModel(object):
                          e.message)
             # Ignore any error and assume there is no vm running in the host
             return []
-
-        libvirtd_running = ['systemctl', 'is-active', 'libvirtd', '--quiet']
+		if is_openrc:
+			libvirtd_running = ['rc-service', 'libvirtd', 'status']
+		else:
+	        libvirtd_running = ['systemctl', 'is-active', 'libvirtd', '--quiet']
         _, _, rcode = run_command(libvirtd_running, silent=True)
         if rcode != 0:
             return []
