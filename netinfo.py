@@ -27,7 +27,7 @@ import os
 
 from distutils.spawn import find_executable
 from wok.stringutils import encode_value
-from wok.utils import run_command, wok_log
+from wok.utils import run_command, wok_log, is_openrc
 
 NET_PATH = '/sys/class/net'
 NIC_PATH = '/sys/class/net/*/device'
@@ -169,14 +169,18 @@ def is_bridge(iface):
 
 
 def is_openvswitch_running():
-    """Checks if the openvswitch service is running in the host.
+	if is_openrc:
+    	cmd = ['rc-service', 'ovs-vswitchd', 'status']
 
-    Returns:
-        bool: True if openvswitch service is running, False otherwise.
+	else:
+	    """Checks if the openvswitch service is running in the host.
 
-    """
-    cmd = ['systemctl', 'is-active', 'openvswitch', '--quiet']
-    _, _, r_code = run_command(cmd, silent=True)
+    	Returns:
+        	bool: True if openvswitch service is running, False otherwise.
+
+	    """
+    	cmd = ['systemctl', 'is-active', 'openvswitch', '--quiet']
+	_, _, r_code = run_command(cmd, silent=True)
     return r_code == 0
 
 
